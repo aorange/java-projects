@@ -1,0 +1,145 @@
+import com.google.gson.Gson;
+import java.io.InputStreamReader;
+import java.net.URL;
+import javax.swing.*;
+
+
+/**
+ * The Movie Parser program prints to the console a list of movies, user inputted size, which can be organized as follows:
+ * 1. All movies
+ * 2. Films of a certain genre
+ * 3. Films that are above a certain score
+ * 4. Films that's popularity are above a certain score
+ * @author Allen Tang
+ * @version 1.0
+ *
+ */
+public class MovieParser {
+    public static void main(String args[]) throws Exception {
+        //load the initial JSON data from the url
+        URL url = new URL("https://api.themoviedb.org/3/movie/popular?api_key=d67638c1e22fd2195af9b42f7f634018" +
+                "&page=1");
+        InputStreamReader reader = new InputStreamReader(url.openStream());
+        Gson movieJesus = new Gson();
+        MoviesList myList = movieJesus.fromJson(reader, MoviesList.class);
+
+
+        //append the rest of the movies to the initial myList using arraylist.add()
+        int numMovies = Integer.parseInt(args[0]);
+        int pages = numMovies / 20;
+        if (pages > 998) {
+            pages = 998; //max allowed page request is 1k
+        }
+        for (int i = 0; i < pages; i++) {
+            URL xtraPage = new URL("https://api.themoviedb.org/3/movie/popular?api_key=" +
+                    "d67638c1e22fd2195af9b42f7f634018&page=" + i + 2); //i+2 here since the page we need first is page 2
+            InputStreamReader tempReader = new InputStreamReader(xtraPage.openStream());
+            Gson tempGson = new Gson();
+            MoviesList temp = tempGson.fromJson(tempReader, MoviesList.class);
+            myList.appendresults(temp.getresults());
+        }
+
+
+        //method calls the requested part of the program
+        if (args[1] == "all") {
+            try {
+                all(myList, numMovies);
+            } catch (IndexOutOfBoundsException allE) {
+                System.out.println("Caught exception: " + allE);
+            }
+        } else if (args[1] == "genre") {
+            try {
+                genre(myList, Integer.parseInt(args[2]), numMovies);
+            } catch (NumberFormatException | IndexOutOfBoundsException genreE) {
+                System.out.println("Caught exception: " + genreE);
+            }
+        } else if (args[1] == "score") {
+            try {
+                votes(myList, Double.parseDouble(args[2]), numMovies);
+            } catch (NumberFormatException | IndexOutOfBoundsException scoreE) {
+                System.out.println("Caught exception: " + scoreE);
+            }
+        } else if (args[1] == "pop") {
+            try {
+                pop(myList, Double.parseDouble(args[2]), numMovies);
+            } catch (NumberFormatException | IndexOutOfBoundsException popE) {
+                System.out.println("Caught exception: " + popE);
+            }
+        } else {
+            System.out.println("Incorrect query type");
+        }
+    }
+
+
+    /**
+     *
+     * Simplest method for printing out the title of all movies
+     * @param myList Json data
+     */
+    public static void all(MoviesList myList, int numMovies) throws IndexOutOfBoundsException{
+        if (numMovies > myList.getresults().size()){
+            throw new RuntimeException("error with index access");
+        }
+        for (int i = 0; i < numMovies; i++){
+            String name = myList.getresults().get(i).getOriginal_title();
+            System.out.print(name + "\n");
+        }
+    }
+    /**
+     * Method for printing out all movies with the specified genre code
+     * @param id The genre code in question
+     * @param myList Json data
+     *
+     */
+    public static void genre(MoviesList myList, int id, int numMovies) throws IndexOutOfBoundsException{
+        if (numMovies > myList.getresults().size()){
+            throw new RuntimeException("error with index access");
+        }
+        for (int i = 0; i < numMovies; i++){
+            //myList.getresults().get(i).getGenre_ids() is our array of genres
+            for (int j = 0; j < myList.getresults().get(i).getGenre_ids().length; j++) {
+                if (myList.getresults().get(i).getGenre_ids()[j] == id) {
+                    String name = myList.getresults().get(i).getOriginal_title();
+                    System.out.print(name + "\n");
+                    break;
+                }
+            }
+        }
+    }
+    /**
+     * Method for printing out all movies with a score above a certain number
+     * @param threshold The cutoff level for scores
+     * @param myList Json data
+     *
+     */
+    public static void votes(MoviesList myList, double threshold, int numMovies) throws IndexOutOfBoundsException{
+        if (numMovies > myList.getresults().size()){
+            throw new RuntimeException("error with index access");
+        }
+        for (int i = 0; i < numMovies; i++){
+            //prints movies greater than threshold
+            if (myList.getresults().get(i).getVote_count() >= threshold) {
+                String name = myList.getresults().get(i).getOriginal_title();
+                System.out.print(name + "\n");
+            }
+        }
+    }
+    /**
+     * Method for printing out all movie with popularity above a certain number
+     * @param threshold The cutoff level for popularity
+     * @param myList Json data
+     *
+     */
+    public static void pop(MoviesList myList, double threshold, int numMovies) throws IndexOutOfBoundsException{
+        if (numMovies > myList.getresults().size()){
+            throw new RuntimeException("error with index access");
+        }
+        for (int i = 0; i < numMovies; i++){
+            //prints movies greater than threshold
+            if (myList.getresults().get(i).getPopularity() >= threshold) {
+                String name = myList.getresults().get(i).getOriginal_title();
+                System.out.print(name + "\n");
+            }
+        }
+    }
+}

@@ -1,0 +1,35 @@
+/**
+ * Created by Allen Tang on 3/6/2017.
+ */
+public class SmartPlayerStrategy implements PlayerStrategy{
+
+    private int myPlayerNumber;
+    private int totalNumPlayers;
+
+    /**
+     * Overridden initialize function that sets the private variables equal to their corresponding init data
+     * @param yourPlayerNumber a number between 0 and (totalNumberOfPlayers - 1) specifying the current player
+     * @param totalNumberOfPlayers a positive integer indicating the total number of players in the game
+     */
+    public void initialize(int yourPlayerNumber, int totalNumberOfPlayers) {
+        myPlayerNumber = yourPlayerNumber;
+        totalNumPlayers = totalNumberOfPlayers;
+    }
+
+    /**
+     *
+     * @param hand The current state of the player's hand when they are to act
+     * @return
+     */
+    public Play doTurn(Hand hand) {
+        return null;
+    }
+
+    /**
+     *
+     * @param recordedPlay an object representing the information of the play that just occurred and its results.
+     */
+    public void playOccurred(RecordedPlay recordedPlay) {
+
+    }
+}

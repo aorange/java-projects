@@ -1,0 +1,36 @@
+/**
+ * Main class that creates the game based on command line input for how many naive and how many smart players
+ */
+public class Main {
+
+    public static void main(String[] args) {
+        int [] playerTypes = initPlayerStyles(args);
+        if(playerTypes == null)
+            return;
+        Game goFish = new Game(playerTypes);
+    }
+
+    public static int[] initPlayerStyles(String[] playerArgs){
+        if (playerArgs.length == 0){
+            System.out.println("No players specified, please specify player attributes");
+            return null;
+        }
+        int [] playerTypes = new int[playerArgs.length];
+        for (int i = 0; i < playerArgs.length; i++) {
+            switch (playerArgs[i]) {
+                case "naive":
+                    playerTypes[i] = 0;
+                    break;
+
+                case "smart":
+                    playerTypes[i] = 1;
+                    break;
+
+                default:
+                    System.out.println("Invalid player type input");
+                    return null;
+            }
+        }
+        return playerTypes;
+    }
+}

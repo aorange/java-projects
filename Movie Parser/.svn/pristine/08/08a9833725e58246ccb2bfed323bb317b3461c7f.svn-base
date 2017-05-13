@@ -1,0 +1,46 @@
+/**
+ * Movies class as a POJO representation of JSON.
+ * @author Allen Tang
+ * @version 1.0
+ */
+public class Movies {
+    //variables
+    private String original_title;
+    private int [] genre_ids;
+    private double popularity;
+    private double vote_count;
+
+    //getters
+    public String getOriginal_title() {
+        return original_title;
+    }
+
+    public int[] getGenre_ids() {
+        return genre_ids;
+    }
+
+    public double getPopularity() {
+        return popularity;
+    }
+
+    public double getVote_count() {
+        return vote_count;
+    }
+
+    //setters
+    public void setOriginal_title(String original_title) {
+        this.original_title = original_title;
+    }
+
+    public void setGenre_ids(int[] genre_ids) {
+        this.genre_ids = genre_ids;
+    }
+
+    public void setPopularity(double popularity) {
+        this.popularity = popularity;
+    }
+
+    public void setVote_count(double vote_count) {
+        this.vote_count = vote_count;
+    }
+}

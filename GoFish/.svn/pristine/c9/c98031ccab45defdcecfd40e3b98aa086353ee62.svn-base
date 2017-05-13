@@ -1,0 +1,113 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.ListIterator;
+
+/**
+ * Game object that runs each game, contains all the players, their hands, and the deck state
+ * @author Allen Tang
+ */
+public class Game {
+
+    private ArrayList<PlayerStrategy> players;
+    private Hand [] playerHands;
+    private Deck gameDeck;
+    private int [] numBooksForPlayer;
+    private int currentPlayer;
+
+
+    /**
+     * Creates the player hands, the deck, the array for holding number of books, and the player list
+     * @param playerTypes the int array with the corresponding player type for each player number
+     */
+    public Game(int [] playerTypes){
+
+        for(int i = 0; i < playerTypes.length; i++){
+            if(playerTypes[i] == 0){
+                NaivePlayerStrategy newPlayer = new NaivePlayerStrategy();
+                newPlayer.initialize(i, playerTypes.length);
+                players.add(newPlayer);
+            } else{
+                SmartPlayerStrategy newPlayer = new SmartPlayerStrategy();
+                newPlayer.initialize(i, playerTypes.length);
+                players.add(newPlayer);
+            }
+        }
+
+        gameDeck = new Deck();
+        playerHands = new Hand [players.size()];
+        numBooksForPlayer = new int[players.size()];
+        currentPlayer = 0;
+    }
+
+    public String oneTurn (){
+        String events = "";
+        ifEmptyDraw();
+
+        Play playForThisTurn = players.get(currentPlayer).doTurn(playerHands[currentPlayer]);
+        boolean guessCorrect = true;
+        int targetPlayer = playForThisTurn.getTargetPlayer();
+        int targetCard = playForThisTurn.getRank();
+
+        while (guessCorrect) {
+
+            if (playerHands[targetPlayer].hasRank(targetCard)) {
+
+
+                RecordedPlay recordedTurn = new RecordedPlay(currentPlayer, targetPlayer, targetCard, null);
+                updatePlayerGameData(recordedTurn);
+            } else {
+                playerHands[currentPlayer].cards.add(gameDeck.draw());
+                RecordedPlay recordedTurn = new RecordedPlay(currentPlayer, targetPlayer, targetCard, null);
+                updatePlayerGameData(recordedTurn);
+                guessCorrect = false;
+            }
+        }
+
+        currentPlayer = (currentPlayer+1) % (players.size());
+        return events;
+    }
+
+    /**
+     * Simplified version of the initial deal, instead of dealing one card to each person clockwise until each person
+     * has 5 cards, we just deal 5 cards to each person. This is the same thing due to the shuffle function in the deck,
+     * the whole reason why cards are dealt one at a time is due to unsatisfactory shuffling, whereas the Collection
+     * shuffle function makes such a reason obsolete.
+     */
+    public void dealInitialCards(){
+        for(int i = 0; i < players.size(); i++){
+            playerHands[i] = new Hand(gameDeck.draw(5));
+        }
+    }
+
+    private void updatePlayerGameData(RecordedPlay recordedTurn){
+        for (PlayerStrategy player : players){
+            player.playOccurred(recordedTurn);
+        }
+    }
+
+    public void ifEmptyDraw(){
+        for (Hand playerHand : playerHands){
+            if(playerHand.size() == 0){
+                playerHand.cards.add(gameDeck.draw());
+            }
+        }
+    }
+
+    public boolean gameOver(){
+        int numberOfBooks = 0;
+        for (int playerBooks : numBooksForPlayer)
+            numberOfBooks += playerBooks;
+        if (numberOfBooks == 13)
+            return true;
+        return false;
+    }
+
+    public int[] getNumBooksForPlayer() {
+        return numBooksForPlayer;
+    }
+
+    public int getWinner(){
+        int mostBooks = Arrays.stream(numBooksForPlayer).max().getAsInt(); //finds largest num of books
+        return Arrays.asList(numBooksForPlayer).indexOf(mostBooks); //finds index of most books
+    }
+}

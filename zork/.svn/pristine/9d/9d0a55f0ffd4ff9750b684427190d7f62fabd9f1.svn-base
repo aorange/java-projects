@@ -1,0 +1,103 @@
+import com.google.gson.Gson;
+
+
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
+/**
+ * Miniature room traversal game that takes input from a user to move from room to room and prints out the description
+ * of each room.
+ * @author Allen Tang
+ */
+public class Main {
+
+    private final static int MIN_ROOMS_FOR_OR = 2;
+
+    public static void main(String args[]){
+        Siebel layout = parseJsonFromUrl();
+        if (layout == null){ //check here in case of an exception earlier
+            return;
+        }
+        Map<String, Room> roomMap = initializeHashmap(layout);
+        String currentRoom = layout.getInitialRoom();
+        oneCycleOfZork(roomMap, currentRoom);
+
+    }
+
+    private static void oneCycleOfZork(Map<String, Room> roomMap, String currentRoom){
+        System.out.println(roomMap.get(currentRoom).getDescription());
+        String possibleDirections = "";
+        int numAdjacentRooms = roomMap.get(currentRoom).getDirections().length;
+
+        for (int numDirections = 0; numDirections < numAdjacentRooms; numDirections++){
+            String currentDirection = roomMap.get(currentRoom).getDirections()[numDirections].getDirection();
+            if(numAdjacentRooms >= MIN_ROOMS_FOR_OR && (numDirections == numAdjacentRooms -1)){
+                possibleDirections += ("or " + currentDirection);
+            } else if (numAdjacentRooms == 1){
+                possibleDirections += currentDirection;
+            } else{
+                possibleDirections += (currentDirection + ", ");
+            }
+
+        }
+        System.out.println("From here you can go: " + possibleDirections);
+        Scanner cmdParser = new Scanner(System.in);
+        String cmd = cmdParser.next();
+        String lowerCaseCmd = cmd.toLowerCase();
+        if (lowerCaseCmd == "done" | lowerCaseCmd == "exit" | lowerCaseCmd == "quit"){
+            return;
+        } else if (lowerCaseCmd.contains("go")){
+            boolean directionInOptions = checkCmdValidity(lowerCaseCmd, roomMap.get(currentRoom).getDirections());
+        } else{
+            System.out.println("I don't understand: '" + cmd + "'");
+            oneCycleOfZork(roomMap, currentRoom);
+        }
+
+    }
+
+    private static boolean checkCmdValidity(String cmd, AdjacentRoom[] directionsToCheck){
+
+        return true;
+    }
+
+
+
+    /**
+     * Method for initializing our hash map which matches Room names to the Room objects
+     * @param layout the building we are making map for
+     * @return completed map
+     */
+    private static Map<String, Room> initializeHashmap(Siebel layout){
+        Map<String, Room> roomMap = new HashMap<>();
+        for(Room current : layout.getRooms()){
+            roomMap.put(current.getName(), current); //match each room name to the room
+        }
+        return roomMap;
+    }
+
+    /**
+     * Method that parses the Json from a url using Gson, handles two exceptions internally
+     * @return the parsed object "Siebel"
+     */
+    private static Siebel parseJsonFromUrl(){
+        try {
+            //read JSON from said url and store in object
+            URL jsonUrl = new URL("https://courses.engr.illinois.edu/cs126/resources/siebel.json");
+            InputStreamReader reader = new InputStreamReader(jsonUrl.openStream());
+            Gson buildingGson = new Gson();
+            Siebel building = buildingGson.fromJson(reader, Siebel.class);
+            return building;
+        } catch(MalformedURLException urlE){
+            System.out.println("Bad URL");
+            return null;
+        } catch(IOException ioE){
+            System.out.println("Exception: " + ioE);
+            return null;
+        }
+    }
+}

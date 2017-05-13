@@ -1,0 +1,66 @@
+/**
+ * Main class that creates the game based on command line input for how many naive and how many smart players
+ * @author Allen Tang
+ */
+
+/**
+ * Main class in charge of printing out all the returned strings from the game class
+ */
+public class Main {
+
+    public static void main(String[] args) {
+
+        int [] playerTypes = initPlayerStyles(args);
+        if(playerTypes == null)
+            return;
+
+        Game goFish = new Game(playerTypes);
+        goFish.dealInitialCards();
+        boolean gameFlag = false;
+
+        while(!gameFlag){
+            System.out.print(goFish.oneTurn());
+            gameFlag = goFish.gameOver();
+
+            if (gameFlag){
+                for (int i = 0; i < goFish.getNumBooksForPlayer().length; i++){
+                    System.out.println("Player " + i + " had " + goFish.getNumBooksForPlayer()[i] + " points");
+                }
+                System.out.println("Player " + goFish.getWinner() + " wins!");
+            }
+        }
+    }
+
+    /**
+     * Initializes the array we use to create the players
+     * @param playerArgs command line arguments passed in that are used to initialize an array of 1 and 0, with 0
+     *                   representing naive players and 1 representing smart players
+     * @return the player styles that have been derived from the command line arguments
+     */
+    public static int[] initPlayerStyles(String[] playerArgs){
+
+        if (playerArgs.length == 0){
+            System.out.println("No players specified, please specify player attributes");
+            return null;
+        }
+        int [] playerTypes = new int[playerArgs.length];
+
+        for (int i = 0; i < playerArgs.length; i++) {
+            switch (playerArgs[i]) {
+
+                case "naive":
+                    playerTypes[i] = 0;
+                    break;
+
+                case "smart":
+                    playerTypes[i] = 1;
+                    break;
+
+                default:
+                    System.out.println("Invalid player type input");
+                    return null;
+            }
+        }
+        return playerTypes;
+    }
+}

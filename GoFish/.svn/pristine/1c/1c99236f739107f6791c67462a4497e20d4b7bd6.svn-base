@@ -1,0 +1,30 @@
+import java.util.ArrayList;
+import java.util.HashMap;
+
+/**
+ * Game object that runs each game, contains all the players, their hands, and the deck state
+ * @author Allen Tang
+ */
+public class Game {
+    private ArrayList<PlayerStrategy> players;
+    private HashMap<PlayerStrategy, Hand> playerHands;
+    private Deck gameDeck;
+
+    public Game(int [] playerTypes){
+
+        for(int i = 0; i < playerTypes.length; i++){
+            if(playerTypes[i] == 0){
+                NaivePlayerStrategy newPlayer = new NaivePlayerStrategy();
+                newPlayer.initialize(i, playerTypes.length);
+                players.add(newPlayer);
+            } else{
+                SmartPlayerStrategy newPlayer = new SmartPlayerStrategy();
+                newPlayer.initialize(i, playerTypes.length);
+                players.add(newPlayer);
+            }
+        }
+
+        gameDeck = new Deck();
+    }
+
+}

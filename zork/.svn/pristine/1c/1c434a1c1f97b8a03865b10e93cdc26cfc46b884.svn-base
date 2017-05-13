@@ -1,0 +1,30 @@
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
+/**
+ * Created by Allen Tang on 2/13/2017.
+ */
+public class MainTest {
+    @Before
+    public void setUpSiebelObject() throws Exception{
+        Siebel building = Main.parseJsonFromUrl(null);
+    }
+
+    @Test
+    public void oneCycleOfZorkTest() throws Exception {
+
+    }
+
+    @Test
+    public void checkCmdValidityAndFindRoomTest() throws Exception {
+
+    }
+
+    @Test
+    public void initializeHashmapTest() throws Exception {
+
+    }
+
+}

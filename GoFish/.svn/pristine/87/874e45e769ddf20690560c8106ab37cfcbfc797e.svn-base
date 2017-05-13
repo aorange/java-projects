@@ -1,0 +1,60 @@
+import java.util.ArrayList;
+
+/**
+ * Intelligent player strategy that keeps track of cards to achieve a winrate above the naive player. Roughly wins
+ * 60% of the time in a match with 4 players.
+ * @author Allen Tang
+ */
+public class SmartPlayerStrategy implements PlayerStrategy{
+
+    private int myPlayerNumber;
+    private int totalNumPlayers;
+    private ArrayList<Integer>[] playerCards;
+
+    /**
+     * Overridden initialize function that sets the private variables equal to their corresponding init data
+     * @param yourPlayerNumber a number between 0 and (totalNumberOfPlayers - 1) specifying the current player
+     * @param totalNumberOfPlayers a positive integer indicating the total number of players in the game
+     */
+    public void initialize(int yourPlayerNumber, int totalNumberOfPlayers) {
+        myPlayerNumber = yourPlayerNumber;
+        totalNumPlayers = totalNumberOfPlayers;
+        playerCards = new ArrayList[totalNumberOfPlayers];
+        for (int i = 0; i < playerCards.length; i++){
+            playerCards[i] = new ArrayList<>();
+        }
+    }
+
+    /**
+     * The turn tries and finds someone who you know has the card we have in our hand, if this fails then we randomly
+     * ask just like the naive ai.
+     * @param hand The current state of the player's hand when they are to act
+     * @return
+     */
+    public Play doTurn(Hand hand) {
+        for(Card myCard : hand.cards){
+            for (int i = 0 ; i < totalNumPlayers; i++){
+                if (playerCards[i].contains(myCard))
+                    return new Play(i, myCard.getRank());
+            }
+        }
+
+        int randHandIndex = (int)(Math.random()*hand.size());
+        int randPlayer = (int)(Math.random()*totalNumPlayers);
+        if (randPlayer == myPlayerNumber)
+            randPlayer = (myPlayerNumber+1) % totalNumPlayers;
+        return new Play(randPlayer, hand.getCard(randHandIndex).getRank());
+    }
+
+    /**
+     * Takes the play that occurred and records who asked for what card, adding it to the arraylist for each person
+     * Also removes the suspected cards from a persons arraylist if they gave those cards to the person asking
+     * @param recordedPlay an object representing the information of the play that just occurred and its results.
+     */
+    public void playOccurred(RecordedPlay recordedPlay) {
+        playerCards[recordedPlay.getSourcePlayer()].add(recordedPlay.getRank());
+        if (recordedPlay.getCardsReturned().size() != 0 && playerCards[recordedPlay.getTargetPlayer()].contains(recordedPlay.getRank())){
+            playerCards[recordedPlay.getTargetPlayer()].remove(new Integer(recordedPlay.getRank()));
+        }
+    }
+}

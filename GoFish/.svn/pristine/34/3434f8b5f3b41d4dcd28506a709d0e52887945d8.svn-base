@@ -1,0 +1,28 @@
+/**
+ * Created by Allen Tang on 3/6/2017.
+ */
+public class NaivePlayerStrategy implements PlayerStrategy{
+
+    private int myPlayerNumber;
+    private int totalNumPlayers;
+
+
+    @Override
+    public void initialize(int yourPlayerNumber, int totalNumberOfPlayers) {
+        myPlayerNumber = yourPlayerNumber;
+        totalNumPlayers = totalNumberOfPlayers;
+    }
+
+    @Override
+    public Play doTurn(Hand hand) {
+        int randRank = (int)(Math.random()*Card.NUM_RANKS);
+        int randPlayer = (int)(Math.random()*totalNumPlayers);
+        Play naivePlay = new Play(randPlayer, randRank);
+        return naivePlay;
+    }
+
+    @Override
+    public void playOccurred(RecordedPlay recordedPlay) {
+        //empty because our naive player doesn't care about the rest of the game
+    }
+}

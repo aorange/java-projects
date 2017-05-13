@@ -1,0 +1,38 @@
+/**
+ * Naive Player object that takes random actions on its turn, asking for a random card from a random player
+ * @author Allen Tang
+ */
+public class NaivePlayerStrategy implements PlayerStrategy{
+
+    private int myPlayerNumber;
+    private int totalNumPlayers;
+
+
+    /**
+     * Overridden initialize function that sets the private variables equal to their corresponding init data
+     * @param yourPlayerNumber a number between 0 and (totalNumberOfPlayers - 1) specifying the current player
+     * @param totalNumberOfPlayers a positive integer indicating the total number of players in the game
+     */
+    public void initialize(int yourPlayerNumber, int totalNumberOfPlayers) {
+        myPlayerNumber = yourPlayerNumber;
+        totalNumPlayers = totalNumberOfPlayers;
+    }
+
+    /**
+     * Naive player turn that asks for a random card from a random player
+     * @param hand The current state of the player's hand when they are to act
+     * @return the naive play with a random player and random card
+     */
+    public Play doTurn(Hand hand) {
+        int randRank = (int)(Math.random()*Card.NUM_RANKS);
+        int randPlayer = (int)(Math.random()*totalNumPlayers);
+        return new Play(randPlayer, randRank);
+    }
+
+    /**
+     * The method that gives us the data on what is occurring in the game, we do nothing with this info since the naive
+     * player does not care about the rest of the game
+     * @param recordedPlay an object representing the information of the play that just occurred and its results.
+     */
+    public void playOccurred(RecordedPlay recordedPlay) {}
+}

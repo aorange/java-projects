@@ -1,0 +1,18 @@
+import java.util.ArrayList;
+
+/**
+ * List of Movies class since we have more than one movie in the JSON.
+ * @author Allen Tang
+ * @version 1.0
+ */
+public class MoviesList {
+    private ArrayList<Movies> mList;
+
+    public ArrayList<Movies> getmList() {
+        return mList;
+    }
+
+    public void setmList(ArrayList<Movies> mList) {
+        this.mList = mList;
+    }
+}
